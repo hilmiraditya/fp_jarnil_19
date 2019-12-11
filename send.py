@@ -20,7 +20,7 @@ def send(message):
     print 'mengirimkan pesan... '
 
     try:
-        sock.recvfrom(16)
+        data, server = sock.recvfrom(16)
     except:
         print "tidak ada respon"
         sock.close()
@@ -28,6 +28,8 @@ def send(message):
     else:
         print "pesan berhasil dikirim"
         sock.close()
+        if(data == "1"):
+            send("0")
         return 1
 
 def checkWaktu(batas_waktu, timestamp):
