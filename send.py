@@ -61,6 +61,8 @@ if __name__ == "__main__":
     message.insert(3, int(batas_waktu))
     #timestamp
     message.insert(4, timestamp)
+    #jumlah hop
+    message.insert(5, 0)
 
     check = 0
     while(check != 1):

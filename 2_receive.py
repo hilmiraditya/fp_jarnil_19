@@ -9,6 +9,7 @@ id_receive = 'pc2'
 port = 10000
 multicast_ip = '224.3.29.71'
 
+
 def send(message): 
     multicast_group = (multicast_ip, port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -36,16 +37,15 @@ def send(message):
 def checkWaktu(batas_waktu, timestamp):
     waktuSekarang = time.time()
     if(waktuSekarang - timestamp > batas_waktu):
-        print "durasi pengiriman melebihi limit waktu"
+        print "durasi melebihi limit waktu"
         exit()
         
-def checkId(id_pengirim):
-    if(id_pengirim == id_receive):
-        print 'Receive telah sesuai dengan tujuan awal'
-        return 1
-    else:
-        print 'Receive belum sesuai tujuan'
-        return 0
+
+def checkBatasHop(jumlah_hop,batas_hop):
+    if(jumlah_hop > batas_hop):
+        print 'Jumlah hop melebihi batas'
+        exit()
+
 
 def receive():
     multicast_group = multicast_ip
@@ -63,18 +63,32 @@ def receive():
         print 'menunggu pesan..'
         data, address = sock.recvfrom(1024)
         message = ast.literal_eval(data)
-
-        print >>sys.stderr, 'mengirim konfirmasi ke ', address
+        print 'terdapat pesan baru !'
+        print 'isi pesan : ', message[0]
+        print 'mengirim konfirmasi ke ', address
         sock.sendto('ack', address)
 
-        cek_id = checkId(message[1])
-        if(cek_id == 1):
+        #cek jumlah hop
+        jumlah_hop = message[5]
+        batas_hop = message[2]
+        checkBatasHop(jumlah_hop,batas_hop)
+
+        #penambahan hop apabila berhasil
+        message[5] = message[5] + 1
+
+        #pengecekan waktu
+        checkWaktu(message[3],message[4])
+
+        #cek apakah receiver ini tujuan awal 
+        if(message[1] == id_receive):
+            print 'receive telah sesuai dengan tujuan awal'
             exit()
         else:
             check = 0
             while(check != 1):
                 checkWaktu(int(message[3]),float(message[4]))
                 check = send(str(message))
+
 
 if __name__ == "__main__":
     receive()

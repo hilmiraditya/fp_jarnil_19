@@ -5,7 +5,7 @@ import time
 import json
 import ast
 
-id_receive = 'pc1'
+id_receive = 'pc3'
 port = 10000
 multicast_ip = '224.3.29.71'
 
@@ -46,12 +46,6 @@ def checkBatasHop(jumlah_hop,batas_hop):
         print 'Jumlah hop melebihi batas'
         exit()
 
-def checkId(id_dari):
-    if(id_dari == id_receive):
-        return 1
-    else:
-        return 0
-
 
 def receive():
     multicast_group = multicast_ip
@@ -71,11 +65,8 @@ def receive():
         message = ast.literal_eval(data)
         print 'terdapat pesan baru !'
         print 'isi pesan : ', message[0]
-
-        getCheckId = checkId(message[1])
-
         print 'mengirim konfirmasi ke ', address
-        sock.sendto(getCheckId, address)
+        sock.sendto('ack', address)
 
         #cek jumlah hop
         jumlah_hop = message[5]
@@ -89,7 +80,7 @@ def receive():
         checkWaktu(message[3],message[4])
 
         #cek apakah receiver ini tujuan awal 
-        if(getCheckId == 1):
+        if(message[1] == id_receive):
             print 'receive telah sesuai dengan tujuan awal'
             exit()
         else:
