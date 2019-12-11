@@ -10,6 +10,7 @@ multicast_ip = '224.3.29.71'
 def send(message): 
     multicast_group = (multicast_ip, port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.settimeout(0.2)
 
     ttl = struct.pack('b', 1)

@@ -5,7 +5,7 @@ import time
 import json
 import ast
 
-id_receive = 'pc1'
+id_receive = 'pc2'
 port = 10000
 multicast_ip = '224.3.29.71'
 
