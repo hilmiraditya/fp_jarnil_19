@@ -4,7 +4,6 @@ import sys
 import time
 import json
 import ast
-import threading 
 
 id_receive = 'pc1'
 port = 10000
@@ -53,21 +52,6 @@ def checkId(id_dari):
     else:
         return 0
 
-def receiveWhileSending():
-    multicast_group = multicast_ip
-    server_address = ('', port)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(server_address)
-    group = socket.inet_aton(multicast_group)
-    mreq = struct.pack('4sL', group, socket.INADDR_ANY)
-    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-    while True:
-        data, address = sock.recvfrom(1024)
-        if(data == "0"):
-            print "ternyata sudah ada receive yang sudah sampai tujuan"
-            exit()
-        sock.sendto('-1', address)
-
 
 def receive():
     multicast_group = multicast_ip
@@ -88,11 +72,8 @@ def receive():
         message = ast.literal_eval(data)
         print 'terdapat pesan baru !'
         print 'isi pesan : ', message[0]
-
-        getCheckId = checkId(message[1])
-
         print 'mengirim konfirmasi ke ', address
-        sock.sendto(str(getCheckId), address)
+        sock.sendto('ack', address)
 
         #cek jumlah hop
         jumlah_hop = message[5]
@@ -106,22 +87,16 @@ def receive():
         checkWaktu(message[3],message[4])
 
         #cek apakah receiver ini tujuan awal 
+        getCheckId = checkId(message[1])
         if(getCheckId == 1):
             print 'receive telah sesuai dengan tujuan awal'
+            sock.sendto('ack', address)
             exit()
         else:
             check = 0
             while(check != 1):
                 checkWaktu(int(message[3]),float(message[4]))
-                # check = send(str(message))
-                t1 = threading.Thread(target=receiveWhileSending) 
-                t2 = threading.Thread(target=send, args=(str(message),)) 
-                t1.start() 
-                t2.start() 
-                t1.join() 
-                t2.join() 
-
-
+                check = send(str(message))
 
 if __name__ == "__main__":
     receive()
