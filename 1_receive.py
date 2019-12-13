@@ -8,6 +8,10 @@ import ast
 id_receive = 'pc1'
 port = 10000
 multicast_ip = '224.3.29.71'
+#perak surabaya
+lat_current = -7.228549
+long_current = 112.731391
+
 
 
 def send(message): 
@@ -25,7 +29,7 @@ def send(message):
     try:
         sock.recvfrom(16)
     except:
-        print "tidak ada respon"
+        #print "tidak ada respon"
         sock.close()
         return 0
     else:
@@ -46,6 +50,14 @@ def checkBatasHop(jumlah_hop,batas_hop):
         print 'Jumlah hop melebihi batas'
         exit()
 
+def cekJarak(lat_from,long_from,maximal_jarak):
+    coords_1 = (lat_from, long_from)
+    coords_2 = (lat_current, long_current)
+    jarak = geodesic(coords_1, coords_2).km
+    print "jaraknya adalah " + str(jarak)
+    if(jarak > maximal_jarak):
+        print "jarak melebihi batas"
+        exit()
 
 def receive():
     multicast_group = multicast_ip
@@ -68,16 +80,22 @@ def receive():
         print 'mengirim konfirmasi ke ', address
         sock.sendto('ack', address)
 
+        message[5] = message[5] + 1
+
+
         #cek jumlah hop
         jumlah_hop = message[5]
         batas_hop = message[2]
         checkBatasHop(jumlah_hop,batas_hop)
 
         #penambahan hop apabila berhasil
-        message[5] = message[5] + 1
+        # message[5] = message[5] + 1
 
         #pengecekan waktu
         checkWaktu(message[3],message[4])
+
+        #cek maximal jarak
+        cekJarak(message[6],message[7],message[8])
 
         #cek apakah receiver ini tujuan awal 
         if(message[1] == id_receive):
@@ -88,8 +106,7 @@ def receive():
             while(check != 1):
                 checkWaktu(int(message[3]),float(message[4]))
                 check = send(str(message))
-            if(check == 1):
-                exit()
+            exit()
 
 if __name__ == "__main__":
     receive()
