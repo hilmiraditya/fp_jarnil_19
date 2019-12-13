@@ -4,6 +4,7 @@ import sys
 import time
 import json
 import ast
+from geopy.distance import geodesic
 
 id_receive = 'pc1'
 port = 10000
@@ -55,7 +56,10 @@ def cekJarak(lat_from,long_from,maximal_jarak):
     coords_2 = (lat_current, long_current)
     jarak = geodesic(coords_1, coords_2).km
     print "jaraknya adalah " + str(jarak)
-    if(jarak > maximal_jarak):
+    
+    print maximal_jarak
+    if(jarak > float(maximal_jarak)):
+        print maximal_jarak
         print "jarak melebihi batas"
         exit()
 
@@ -75,10 +79,12 @@ def receive():
         print 'menunggu pesan..'
         data, address = sock.recvfrom(1024)
         message = ast.literal_eval(data)
+        cekJarak(message[6],message[7],message[8])
         print 'terdapat pesan baru !'
         print 'isi pesan : ', message[0]
         print 'mengirim konfirmasi ke ', address
         sock.sendto('ack', address)
+
 
         message[5] = message[5] + 1
 
@@ -95,7 +101,7 @@ def receive():
         checkWaktu(message[3],message[4])
 
         #cek maximal jarak
-        cekJarak(message[6],message[7],message[8])
+        # cekJarak(message[6],message[7],message[8])
 
         #cek apakah receiver ini tujuan awal 
         if(message[1] == id_receive):
