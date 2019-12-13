@@ -39,17 +39,17 @@ def checkWaktu(batas_waktu, timestamp):
 if __name__ == "__main__":
     message = []
 
-    # pesan = raw_input("Masukkan Pesan > ")
-    # id_tujuan = raw_input("Masukkan ID Tujuan > ")
-    # batas_hop = raw_input("Masukkan Batas Hop > ")
-    # batas_waktu = raw_input("Masukkan Batas Waktu > ")
-    # timestamp = time.time()
-
-    pesan = "percobaan"
-    id_tujuan = "pc1"
-    batas_hop = "30"
-    batas_waktu = "30"
+    pesan = raw_input("Masukkan Pesan > ")
+    id_tujuan = raw_input("Masukkan ID Tujuan > ")
+    batas_hop = raw_input("Masukkan Batas Hop > ")
+    batas_waktu = raw_input("Masukkan Batas Waktu > ")
     timestamp = time.time()
+
+    # pesan = "percobaan"
+    # id_tujuan = "pc1"
+    # batas_hop = "30"
+    # batas_waktu = "30"
+    # timestamp = time.time()
 
     #pesan
     message.insert(0, pesan)

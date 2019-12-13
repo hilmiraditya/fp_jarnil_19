@@ -88,7 +88,8 @@ def receive():
             while(check != 1):
                 checkWaktu(int(message[3]),float(message[4]))
                 check = send(str(message))
-
+            if(check == 1):
+                exit()
 
 if __name__ == "__main__":
     receive()

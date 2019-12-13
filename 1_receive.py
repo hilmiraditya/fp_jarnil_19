@@ -46,12 +46,6 @@ def checkBatasHop(jumlah_hop,batas_hop):
         print 'Jumlah hop melebihi batas'
         exit()
 
-def checkId(id_dari):
-    if(id_dari == id_receive):
-        return 1
-    else:
-        return 0
-
 
 def receive():
     multicast_group = multicast_ip
@@ -68,7 +62,6 @@ def receive():
     while True:
         print 'menunggu pesan..'
         data, address = sock.recvfrom(1024)
-
         message = ast.literal_eval(data)
         print 'terdapat pesan baru !'
         print 'isi pesan : ', message[0]
@@ -87,16 +80,16 @@ def receive():
         checkWaktu(message[3],message[4])
 
         #cek apakah receiver ini tujuan awal 
-        getCheckId = checkId(message[1])
-        if(getCheckId == 1):
+        if(message[1] == id_receive):
             print 'receive telah sesuai dengan tujuan awal'
-            sock.sendto('ack', address)
             exit()
         else:
             check = 0
             while(check != 1):
                 checkWaktu(int(message[3]),float(message[4]))
                 check = send(str(message))
+            if(check == 1):
+                exit()
 
 if __name__ == "__main__":
     receive()
